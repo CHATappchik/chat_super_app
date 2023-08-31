@@ -1,11 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoggedStatus {
-  // static Future<bool?> getUserLoggedStatus() async{
-  //   SharedPreferences sf = await SharedPreferences.getInstance();
-  //   return sf.getBool();
-  // }
-
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
