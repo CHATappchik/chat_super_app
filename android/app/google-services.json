@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "338724453403",
+    "project_id": "chatsuperapp",
+    "storage_bucket": "chatsuperapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338724453403:android:5a8348adf0cc73d72b8cbe",
+        "android_client_info": {
+          "package_name": "com.chat_super_app.chat_super_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "338724453403-ff6k3629ijjns7umcgvn4j3hjptd7mbu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDevSfCDlbeqxv7CGXfLMyhQVwqSu-NsZ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "338724453403-ff6k3629ijjns7umcgvn4j3hjptd7mbu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
