@@ -8,9 +8,6 @@ class ChatsListScreen extends StatefulWidget {
 }
 
 class _ChatsListScreenState extends State<ChatsListScreen> {
-  String userName = "";
-  String email = "";
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,24 +48,39 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
             const Divider(height: 2),
             ListTile(
               onTap: () {},
+              selectedColor: Theme.of(context).primaryColor,
+              selected: true,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               leading: const Icon(Icons.group),
-              title: const Text("Profile"),
+              title: const Text(
+                "Profile",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ListTile(
               onTap: () {},
+              selectedColor: Theme.of(context).primaryColor,
+              selected: true,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               leading: const Icon(Icons.settings),
-              title: const Text("Settings"),
+              title: const Text(
+                "Settings",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ListTile(
               onTap: () {},
+              selectedColor: Theme.of(context).primaryColor,
+              selected: true,
               contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               leading: const Icon(Icons.logout),
-              title: const Text("Logout"),
+              title: const Text(
+                "Logout",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
           ],
         ),
