@@ -3,6 +3,8 @@ import 'package:chat_super_app/services/style.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/often_abused_function.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -38,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
                       const Text('Login in this app',
                           style: TextStyle(
                               fontSize: 15, fontWeight: FontWeight.w400)),
-                      Image.asset('assets/logo.jpg'),
+                      Image.asset('assets/sign_in.jpg'),
                       const SizedBox(height: 15),
                       TextFormField(
                         decoration: textInputDecoration.copyWith(
