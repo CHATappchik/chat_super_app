@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoggedStatus {
@@ -25,4 +26,25 @@ class LoggedStatus {
   static User? getCurrentUser() {
     return _auth.currentUser;
   }
+  // static Future<bool> saveUserLoggedInStatus(bool isUserLoggedIn) async{
+  //
+  // }
+
+  static Future<bool?> saveUserLoggedInStatus(String userEmeil, bool isUserLoggedIn) async {
+  try {
+  final firestore = FirebaseFirestore.instance;
+     final userCheck =  await firestore.collection('users').doc(userEmeil);
+    if(userCheck != null) {
+      isUserLoggedIn = true;
+    } else {
+      isUserLoggedIn = false;
+    }
+    print(isUserLoggedIn);
+    return isUserLoggedIn;
+  } catch (error) {
+  print('Помилка під час збереження стану користувача: $error');
+  // Обробка помилок
+  }
+  }
+
 }

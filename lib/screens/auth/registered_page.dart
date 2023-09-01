@@ -1,4 +1,6 @@
 import 'package:chat_super_app/screens/auth/login_page.dart';
+import 'package:chat_super_app/services/auth_service.dart';
+import 'package:chat_super_app/services/logged_status.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -13,10 +15,12 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  bool _isLoading = false;
   final formKey = GlobalKey<FormState>();
   String email = '';
   String password = '';
   String fullName = '';
+  AuthService authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +28,8 @@ class _RegisterPageState extends State<RegisterPage> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         ),
-        body: SingleChildScrollView(
+        body: _isLoading ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor)) :
+        SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
             child: Form(
@@ -153,7 +158,22 @@ class _RegisterPageState extends State<RegisterPage> {
         )
     );
   }
-  registration() {
-
+  registration() async{
+    if(formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+      await authService.registerUser(fullName, email, password)
+      .then((value) async{
+        if(value == true) {
+          await LoggedStatus.saveUserLoggedInStatus(email, true);
+        } else {
+          showSnackBar(context, Colors.red, value);
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      });
+    }
   }
 }

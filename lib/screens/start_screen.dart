@@ -1,5 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:chat_super_app/screens/temporary_page.dart';
+import 'package:chat_super_app/screens/chats_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
           ],
         ),
         backgroundColor: Colors.white,
-        nextScreen: _isSignedIn ? const MyHomePage(title: 'Temporary Page') : const LoginPage(),
+        nextScreen: _isSignedIn ? const ChatsListScreen() : const LoginPage(),
         splashIconSize: 250,
       duration: 3000,
       splashTransition: SplashTransition.sizeTransition,

@@ -1,4 +1,5 @@
 import 'package:chat_super_app/screens/auth/registered_page.dart';
+import 'package:chat_super_app/screens/chats_list_screen.dart';
 import 'package:chat_super_app/services/style.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -130,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
   }
   login() {
     if(formKey.currentState!.validate()) {
-
+      nextScreen(context, const ChatsListScreen());
     }
   }
 }
