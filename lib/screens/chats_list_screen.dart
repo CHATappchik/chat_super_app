@@ -1,3 +1,4 @@
+import 'package:chat_super_app/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class ChatsListScreen extends StatefulWidget {
@@ -47,7 +48,12 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
             const SizedBox(height: 30),
             const Divider(height: 2),
             ListTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ProfileScreen()));
+              },
               selectedColor: Theme.of(context).primaryColor,
               selected: true,
               contentPadding:
