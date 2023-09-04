@@ -3,7 +3,8 @@ import 'package:chat_super_app/screens/chats_list_screen.dart';
 import 'package:chat_super_app/services/style.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
+import '../../component/square_tile.dart';
+import '../../services/auth_google_service.dart';
 import '../../services/often_abused_function.dart';
 
 class LoginPage extends StatefulWidget {
@@ -41,8 +42,10 @@ class _LoginPageState extends State<LoginPage> {
                       const Text('Login in this app',
                           style: TextStyle(
                               fontSize: 15, fontWeight: FontWeight.w400)),
-                      Image.asset('assets/sign_in.jpg'),
-                      const SizedBox(height: 15),
+                      Image.asset('assets/chat.png',
+                        height: 125,
+                      ),
+                      const SizedBox(height: 25),
                       TextFormField(
                         decoration: textInputDecoration.copyWith(
                           labelText: 'Email',
@@ -104,7 +107,38 @@ class _LoginPageState extends State<LoginPage> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 40),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: Divider(
+                                  thickness: 0.5,
+                                  color: Colors.grey[400],
+                                ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Text('Or continue with',
+                              style: TextStyle(color: Colors.grey[700])
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                thickness: 0.5,
+                                color: Colors.grey[400],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      Center(
+                        child: SquareTile(onTap: () => AuthGoogleService().signInGoogle(),
+                        imagePath: 'assets/google_new.png'),
+                      ),
+                      const SizedBox(height: 25),
                       Text.rich(
                           TextSpan(
                             text: 'Ще немає акаунта?',
