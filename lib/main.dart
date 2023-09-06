@@ -1,6 +1,10 @@
+import 'package:chat_super_app/repository/theme_repository.dart';
 import 'package:chat_super_app/screens/start_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'bloc/theme_cubit.dart';
+import 'bloc/theme_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,16 +17,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        appBarTheme: const AppBarTheme(
-          iconTheme: IconThemeData(color: Colors.white),
-        ),
-        useMaterial3: true,
+    return BlocProvider(
+      create: (context) => ThemeCubit(ThemeRepository())..loadTheme(),
+      child: Builder(
+        builder: (context) {
+          final themeCubit = context.watch<ThemeCubit>();
+          final currentTheme = themeCubit.state;
+          return MaterialApp(
+            title: 'Flutter Demo',
+            theme: ThemeData(
+              primaryColor: getThemeColor(currentTheme),
+              appBarTheme: const AppBarTheme(
+                iconTheme: IconThemeData(color: Colors.white),
+              ),
+              useMaterial3: true,
+            ),
+            home: const SplashScreen(),
+          );
+        },
       ),
-      home: const SplashScreen(),
     );
   }
 }
