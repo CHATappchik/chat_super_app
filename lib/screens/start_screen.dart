@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
     getUserLoggedInStatus();
   }
   getUserLoggedInStatus() async{
-      if(LoggedStatus.getCurrentUser() != null) {
+      if(LoggedStatus.getCurrentUser() == null) {
         _isSignedIn = true;
       }else {
         _isSignedIn = false;
