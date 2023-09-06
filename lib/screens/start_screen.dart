@@ -3,8 +3,32 @@ import 'package:chat_super_app/screens/temporary_page.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
-class SplashScreen extends StatelessWidget {
+import '../services/logged_status.dart';
+import 'auth/login_page.dart';
+
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  late bool _isSignedIn;
+
+  @override
+  void initState() {
+    super.initState();
+    getUserLoggedInStatus();
+  }
+  getUserLoggedInStatus() async{
+      if(LoggedStatus.getCurrentUser() != null) {
+        _isSignedIn = true;
+      }else {
+        _isSignedIn = false;
+      }
+    }
+
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +42,7 @@ class SplashScreen extends StatelessWidget {
           ],
         ),
         backgroundColor: Colors.white,
-        nextScreen: const MyHomePage(title: 'Temporary Page'),
+        nextScreen: _isSignedIn ? const MyHomePage(title: 'Temporary Page') : const LoginPage(),
         splashIconSize: 250,
       duration: 3000,
       splashTransition: SplashTransition.sizeTransition,
