@@ -1,10 +1,12 @@
 import 'package:chat_super_app/screens/auth/registered_page.dart';
 import 'package:chat_super_app/screens/chats_list_screen.dart';
 import 'package:chat_super_app/services/style.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../component/square_tile.dart';
 import '../../services/auth_google_service.dart';
+import '../../services/database_servise.dart';
 import '../../services/often_abused_function.dart';
 
 class LoginPage extends StatefulWidget {
@@ -135,7 +137,9 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 40),
                       Center(
-                        child: SquareTile(onTap: () => AuthGoogleService().signInGoogle(),
+                        child: SquareTile(onTap: () {
+                          AuthGoogleService().signInGoogle();
+                          },
                         imagePath: 'assets/google_new.png'),
                       ),
                       const SizedBox(height: 25),

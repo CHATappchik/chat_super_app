@@ -26,9 +26,6 @@ class LoggedStatus {
   static User? getCurrentUser() {
     return _auth.currentUser;
   }
-  // static Future<bool> saveUserLoggedInStatus(bool isUserLoggedIn) async{
-  //
-  // }
 
   static Future<bool?> saveUserLoggedInStatus(String userEmeil, bool isUserLoggedIn) async {
   try {
