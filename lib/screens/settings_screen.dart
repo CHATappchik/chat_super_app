@@ -14,6 +14,9 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
+    final themeCubit = context.watch<ThemeCubit>();
+    final currentTheme = themeCubit.state;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -22,24 +25,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: const Text(
           "Settings",
           style: TextStyle(
-              color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          children:
-          <Widget>[
-            SizedBox(height: 20),
-            Text(
-              "Колірні теми",
+          children: <Widget>[
+            const SizedBox(height: 20),
+            const Text(
+              "Color Themes",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 20),
-            Row(
+            const SizedBox(height: 20),
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 ThemeCircle(AppTheme.purple),
@@ -48,6 +53,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ThemeCircle(AppTheme.green),
               ],
             ),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Dark Theme",style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),),
+                const SizedBox(width: 10),
+                Switch(
+                  value: currentTheme == AppTheme.dark,
+                  activeColor: Colors.white12,
+                  onChanged: (newValue) {
+                    themeCubit.toggleTheme();
+                  },
+                ),
+              ],
+            )
           ],
         ),
       ),

@@ -18,20 +18,24 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ThemeCubit(ThemeRepository())..loadTheme(),
+      create: (context) => ThemeCubit(ThemeRepository()),
       child: Builder(
         builder: (context) {
           final themeCubit = context.watch<ThemeCubit>();
           final currentTheme = themeCubit.state;
+          final themeData = ThemeData(
+            primaryColor: getThemeColor(currentTheme),
+            appBarTheme: const AppBarTheme(
+              iconTheme: IconThemeData(color: Colors.white),
+            ),
+            useMaterial3: true,
+            brightness: currentTheme == AppTheme.dark
+                ? Brightness.dark
+                : Brightness.light,
+          );
           return MaterialApp(
             title: 'Flutter Demo',
-            theme: ThemeData(
-              primaryColor: getThemeColor(currentTheme),
-              appBarTheme: const AppBarTheme(
-                iconTheme: IconThemeData(color: Colors.white),
-              ),
-              useMaterial3: true,
-            ),
+            theme: themeData,
             home: const SplashScreen(),
           );
         },
@@ -39,3 +43,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
