@@ -1,5 +1,6 @@
 import 'package:chat_super_app/screens/profile_screen.dart';
 import 'package:chat_super_app/screens/settings_screen.dart';
+import 'package:chat_super_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class ChatsListScreen extends StatefulWidget {
@@ -10,6 +11,7 @@ class ChatsListScreen extends StatefulWidget {
 }
 
 class _ChatsListScreenState extends State<ChatsListScreen> {
+  AuthService authService = AuthService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,7 +108,7 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                           const SizedBox(width: 5),
                           IconButton(
                             onPressed: () {
-                              // повернення на сторінку входу
+                              authService.signOut();
                             },
                             icon: const Icon(
                               Icons.done_outline_sharp,

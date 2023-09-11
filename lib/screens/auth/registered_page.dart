@@ -1,9 +1,13 @@
+import 'package:chat_super_app/helper/helper_file.dart';
 import 'package:chat_super_app/screens/auth/login_page.dart';
+import 'package:chat_super_app/services/auth_service.dart';
+import 'package:chat_super_app/services/logged_status.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/often_abused_function.dart';
 import '../../services/style.dart';
+import '../chats_list_screen.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -13,10 +17,12 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  bool _isLoading = false;
   final formKey = GlobalKey<FormState>();
   String email = '';
   String password = '';
   String fullName = '';
+  AuthService authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +30,8 @@ class _RegisterPageState extends State<RegisterPage> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
         ),
-        body: SingleChildScrollView(
+        body: _isLoading ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor)) :
+        SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
             child: Form(
@@ -153,7 +160,25 @@ class _RegisterPageState extends State<RegisterPage> {
         )
     );
   }
-  registration() {
-
+  registration() async{
+    if(formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+      await authService.registerUser(fullName, email, password)
+      .then((value) async{
+        if(value == true) {
+          await HelperFunction.saveUserLoggedInStatus(true);
+          await HelperFunction.saveUserEmailSF(email);
+          await HelperFunction.saveUserNameSF(fullName);
+          nextScreenReplace(context, ChatsListScreen());
+        } else {
+          showSnackBar(context, Colors.red, value);
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      });
+    }
   }
 }

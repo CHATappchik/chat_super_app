@@ -1,8 +1,15 @@
 import 'package:chat_super_app/screens/auth/registered_page.dart';
+import 'package:chat_super_app/screens/chats_list_screen.dart';
+import 'package:chat_super_app/services/auth_service.dart';
 import 'package:chat_super_app/services/style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
+import '../../component/square_tile.dart';
+import '../../helper/helper_file.dart';
+import '../../services/auth_google_service.dart';
+import '../../services/database_servise.dart';
 import '../../services/often_abused_function.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,6 +23,8 @@ class _LoginPageState extends State<LoginPage> {
   final formKey = GlobalKey<FormState>();
   String email = '';
   String password = '';
+  bool _isLoading = false;
+  AuthService authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
         ),
-        body: SingleChildScrollView(
+        body: _isLoading ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor), ) : SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
             child: Form(
@@ -40,8 +49,10 @@ class _LoginPageState extends State<LoginPage> {
                       const Text('Login in this app',
                           style: TextStyle(
                               fontSize: 15, fontWeight: FontWeight.w400)),
-                      Image.asset('assets/sign_in.jpg'),
-                      const SizedBox(height: 15),
+                      Image.asset('assets/chat.png',
+                        height: 125,
+                      ),
+                      const SizedBox(height: 25),
                       TextFormField(
                         decoration: textInputDecoration.copyWith(
                           labelText: 'Email',
@@ -103,7 +114,40 @@ class _LoginPageState extends State<LoginPage> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 40),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: Divider(
+                                  thickness: 0.5,
+                                  color: Colors.grey[400],
+                                ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Text('Or continue with',
+                              style: TextStyle(color: Colors.grey[700])
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                thickness: 0.5,
+                                color: Colors.grey[400],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      Center(
+                        child: SquareTile(onTap: () {
+                          AuthGoogleService().signInGoogle();
+                          },
+                        imagePath: 'assets/google_new.png'),
+                      ),
+                      const SizedBox(height: 25),
                       Text.rich(
                           TextSpan(
                             text: 'Ще немає акаунта?',
@@ -128,9 +172,29 @@ class _LoginPageState extends State<LoginPage> {
         )
     );
   }
-  login() {
-    if(formKey.currentState!.validate()) {
-
+  login() async {
+    if (formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+      await authService.loginUser(email, password)
+          .then((value) async {
+        if (value == true) {
+          QuerySnapshot snapshot =
+          await DataBaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+              .gettingUserData(email);
+          // saving value to ShP
+          await HelperFunction.saveUserLoggedInStatus(true);
+          await HelperFunction.saveUserEmailSF(email);
+          await HelperFunction.saveUserNameSF(snapshot.docs[0]['fullName']);
+          nextScreenReplace(context, ChatsListScreen());
+        } else {
+          showSnackBar(context, Colors.red, value);
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      });
     }
   }
 }
