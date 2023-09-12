@@ -10,6 +10,7 @@ class ThemeCubit extends Cubit<AppTheme> {
 
   ThemeCubit(this.themeRepository) : super(AppTheme.purple) {
     _loadSavedTheme();
+    previousTheme = AppTheme.purple;
   }
 
   void changeTheme(AppTheme theme) {

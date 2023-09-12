@@ -19,11 +19,11 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
     final themeCubit = context.watch<ThemeCubit>();
     final currentTheme = themeCubit.state;
 
-      final titleTextStyle = TextStyle(
+    /*  final titleTextStyle = TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 24,
       color: currentTheme == AppTheme.dark ? Colors.white : Colors.black,
-    );
+    );*/
 
     return Scaffold(
       appBar: AppBar(
