@@ -1,10 +1,8 @@
 import 'package:chat_super_app/helper/helper_file.dart';
 import 'package:chat_super_app/screens/auth/login_page.dart';
 import 'package:chat_super_app/services/auth_service.dart';
-import 'package:chat_super_app/services/logged_status.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import '../../services/often_abused_function.dart';
 import '../../services/style.dart';
 import '../chats_list_screen.dart';
@@ -27,9 +25,6 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
         body: _isLoading ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor)) :
         SingleChildScrollView(
           child: Padding(
@@ -43,12 +38,17 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: <Widget>[
                       const Text('Chat',
                           style: TextStyle(
-                              fontSize: 40, fontWeight: FontWeight.bold)),
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold,
+                          color: Colors.purple),
+                      ),
                       const SizedBox(height: 10),
                       const Text('Створіть Ваш акаунт',
                           style: TextStyle(
                               fontSize: 15, fontWeight: FontWeight.w400)),
-                      Image.asset('assets/register.jpg'),
+                      const SizedBox(height: 35),
+                      Image.asset('assets/reg.png',
+                        height: 125),
                       const SizedBox(height: 15),
                       TextFormField(
                         decoration: textInputDecoration.copyWith(

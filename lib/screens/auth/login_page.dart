@@ -29,9 +29,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
         body: _isLoading ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor), ) : SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
@@ -44,12 +41,15 @@ class _LoginPageState extends State<LoginPage> {
                     children: <Widget>[
                       const Text('Chat',
                           style: TextStyle(
-                              fontSize: 40, fontWeight: FontWeight.bold)),
+                              fontSize: 40, fontWeight: FontWeight.bold,
+                              color: Colors.purple),
+                      ),
                       const SizedBox(height: 10),
                       const Text('Login in this app',
                           style: TextStyle(
                               fontSize: 15, fontWeight: FontWeight.w400)),
-                      Image.asset('assets/chat.png',
+                      const SizedBox(height: 35),
+                      Image.asset('assets/sign.png',
                         height: 125,
                       ),
                       const SizedBox(height: 25),
