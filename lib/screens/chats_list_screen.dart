@@ -1,11 +1,13 @@
 import 'package:chat_super_app/screens/profile_screen.dart';
 import 'package:chat_super_app/screens/settings_screen.dart';
 import 'package:chat_super_app/services/auth_service.dart';
+import 'package:chat_super_app/services/often_abused_function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/theme_cubit.dart';
 import '../bloc/theme_state.dart';
+import 'auth/login_page.dart';
 
 class ChatsListScreen extends StatefulWidget {
   const ChatsListScreen({super.key});
@@ -138,8 +140,12 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                           ),
                           const SizedBox(width: 5),
                           IconButton(
-                            onPressed: () {
-                              authService.signOut();
+                            onPressed: () async {
+                              await authService.signOut();
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => const LoginPage()),
+                                      (route) => false);
                             },
                             icon: const Icon(
                               Icons.done_outline_sharp,
