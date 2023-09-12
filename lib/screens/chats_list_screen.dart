@@ -2,6 +2,10 @@ import 'package:chat_super_app/screens/profile_screen.dart';
 import 'package:chat_super_app/screens/settings_screen.dart';
 import 'package:chat_super_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/theme_cubit.dart';
+import '../bloc/theme_state.dart';
 
 class ChatsListScreen extends StatefulWidget {
   const ChatsListScreen({super.key});
@@ -14,6 +18,15 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
   AuthService authService = AuthService();
   @override
   Widget build(BuildContext context) {
+    final themeCubit = context.watch<ThemeCubit>();
+    final currentTheme = themeCubit.state;
+
+    /*  final titleTextStyle = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 24,
+      color: currentTheme == AppTheme.dark ? Colors.white : Colors.black,
+    );*/
+
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -61,10 +74,19 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
               selected: true,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              leading: const Icon(Icons.group),
-              title: const Text(
+              leading: Icon(
+                Icons.group,
+                color: currentTheme == AppTheme.dark
+                    ? Colors.white
+                    : Theme.of(context).primaryColor,
+              ),
+              title: Text(
                 "Profile",
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(
+                  color: currentTheme == AppTheme.dark
+                      ? Colors.white
+                      : Colors.black,
+                ),
               ),
             ),
             ListTile(
@@ -78,10 +100,19 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
               selected: true,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              leading: const Icon(Icons.settings),
-              title: const Text(
+              leading: Icon(
+                Icons.settings,
+                color: currentTheme == AppTheme.dark
+                    ? Colors.white
+                    : Theme.of(context).primaryColor,
+              ),
+              title: Text(
                 "Settings",
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(
+                  color: currentTheme == AppTheme.dark
+                      ? Colors.white
+                      : Colors.black,
+                ),
               ),
             ),
             ListTile(
@@ -124,10 +155,19 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
               selected: true,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              leading: const Icon(Icons.logout),
-              title: const Text(
+              leading: Icon(
+                Icons.logout,
+                color: currentTheme == AppTheme.dark
+                    ? Colors.white
+                    : Theme.of(context).primaryColor,
+              ),
+              title: Text(
                 "Logout",
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(
+                  color: currentTheme == AppTheme.dark
+                      ? Colors.white
+                      : Colors.black,
+                ),
               ),
             ),
           ],

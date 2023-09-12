@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum AppTheme { red, blue, green, purple}
+enum AppTheme { red, blue, green, purple, dark, light}
 
 Color getThemeColor(AppTheme theme) {
   switch (theme) {
@@ -10,6 +10,8 @@ Color getThemeColor(AppTheme theme) {
       return Colors.blue;
     case AppTheme.green:
       return Colors.green;
+    case AppTheme.dark:
+      return Colors.black;
     default:
       return Colors.purple;
   }
