@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 
+import '../services/auth_service.dart';
+
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  String userName = "";
+  String email = "";
+
+  ProfileScreen({Key? key, required this.userName, required this.email})
+      : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-// перевірка gitHub
 class _ProfileScreenState extends State<ProfileScreen> {
+  AuthService authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,19 +41,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: Colors.grey[700],
               ),
               const SizedBox(height: 45),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Full Name", style: TextStyle(fontSize: 17)),
-                  Text("User1", style: TextStyle(fontSize: 17)),
+                  const Text("Full Name", style: TextStyle(fontSize: 17)),
+                  Text(widget.userName, style: const TextStyle(fontSize: 17)),
                 ],
               ),
               const Divider(height: 20),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Email", style: TextStyle(fontSize: 17)),
-                  Text("user1@email.com", style: TextStyle(fontSize: 17)),
+                  const Text("Email", style: TextStyle(fontSize: 17)),
+                  Text(widget.email, style: const TextStyle(fontSize: 17)),
                 ],
               ),
             ],
