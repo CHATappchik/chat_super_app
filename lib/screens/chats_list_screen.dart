@@ -1,7 +1,7 @@
+import 'package:chat_super_app/helper/helper_file.dart';
 import 'package:chat_super_app/screens/profile_screen.dart';
 import 'package:chat_super_app/screens/settings_screen.dart';
 import 'package:chat_super_app/services/auth_service.dart';
-import 'package:chat_super_app/services/often_abused_function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,16 +18,32 @@ class ChatsListScreen extends StatefulWidget {
 
 class _ChatsListScreenState extends State<ChatsListScreen> {
   AuthService authService = AuthService();
+  String userName = "";
+  String email = "";
+
+  @override
+  void initState() {
+    super.initState();
+    gettingUserData();
+  }
+
+  gettingUserData() async {
+    await HelperFunction.getUserEmailFromSF().then((value) {
+      setState(() {
+        email = value!;
+      });
+    });
+    await HelperFunction.getUserNameFromSF().then((val) {
+      setState(() {
+        userName = val!;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeCubit = context.watch<ThemeCubit>();
     final currentTheme = themeCubit.state;
-
-    /*  final titleTextStyle = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 24,
-      color: currentTheme == AppTheme.dark ? Colors.white : Colors.black,
-    );*/
 
     return Scaffold(
       appBar: AppBar(
@@ -58,10 +74,10 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
               color: Colors.grey[700],
             ),
             const SizedBox(height: 15),
-            const Text(
-              'Username',
+            Text(
+              userName,
               textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
             const SizedBox(height: 30),
             const Divider(height: 2),
@@ -70,7 +86,8 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const ProfileScreen()));
+                        builder: (context) =>
+                            ProfileScreen(userName: userName, email: email)));
               },
               selectedColor: Theme.of(context).primaryColor,
               selected: true,
@@ -145,7 +162,7 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                               Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
                                       builder: (context) => const LoginPage()),
-                                      (route) => false);
+                                  (route) => false);
                             },
                             icon: const Icon(
                               Icons.done_outline_sharp,
