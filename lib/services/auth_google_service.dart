@@ -3,7 +3,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthGoogleService {
 
-  signInGoogle() async{
+  Future<User?>signInGoogle() async{
+    try{
     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
 
     final GoogleSignInAuthentication gAuth = await gUser!.authentication;
@@ -12,6 +13,15 @@ class AuthGoogleService {
       accessToken: gAuth.accessToken,
       idToken: gAuth.idToken,
     );
-    return await FirebaseAuth.instance.signInWithCredential(credential);
-  }
+
+    final UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(credential);
+    final User? user = authResult.user;
+
+
+    return user;
+  } catch (error) {
+      print('Помилка авторизації через Google: $error');
+      return null;
+    }
+    }
 }
