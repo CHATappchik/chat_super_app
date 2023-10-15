@@ -2,6 +2,8 @@ import 'package:chat_super_app/helper/helper_file.dart';
 import 'package:chat_super_app/screens/profile_screen.dart';
 import 'package:chat_super_app/screens/settings_screen.dart';
 import 'package:chat_super_app/services/auth_service.dart';
+import 'package:chat_super_app/services/database_servise.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,6 +22,9 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
   AuthService authService = AuthService();
   String userName = "";
   String email = "";
+  Stream? groups;
+  bool _isLoading = false;
+  String groupName = "";
 
   @override
   void initState() {
@@ -36,6 +41,16 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
     await HelperFunction.getUserNameFromSF().then((val) {
       setState(() {
         userName = val!;
+      });
+    });
+
+    // getting the list snapshots in our stream
+
+    await DataBaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getUserGroups()
+        .then((snapshot) {
+      setState(() {
+        groups = snapshot;
       });
     });
   }
@@ -196,6 +211,7 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
           ],
         ),
       ),
+      body: groupList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showDialog(
@@ -236,6 +252,116 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
           color: Colors.white,
           size: 30,
         ),
+      ),
+    );
+  }
+
+  popUpDialog(BuildContext context) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Створити чат', textAlign: TextAlign.left),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _isLoading == true
+                    ? Center(
+                        child: CircularProgressIndicator(
+                            color: Theme.of(context).primaryColor),
+                      )
+                    : TextField(
+                  onChanged: (val) {
+                    setState(() {
+                      groupName = val;
+                    });
+                  },
+                  style: const TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                borderRadius: BorderRadius.circular(20)),
+                            errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.red,
+                                ),
+                                borderRadius: BorderRadius.circular(20)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                borderRadius: BorderRadius.circular(20)),
+                        ),
+                      ),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor
+                ),
+                  child: const Text('ВІДМІНА'),
+              ),
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor
+                ),
+                child: const Text('СТВОРИТИ'),
+              )
+            ],
+          );
+        });
+  }
+
+  groupList() {
+    return StreamBuilder(
+        stream: groups,
+        builder: (context, AsyncSnapshot snapshot) {
+          //make some checks
+          if (snapshot.hasData) {
+            if (snapshot.data['groups'] != null) {
+              if (snapshot.data['groups'].length != 0) {
+                return const Text('HELOOO');
+              } else {
+                return noGroupWidget();
+              }
+            } else {
+              return noGroupWidget();
+            }
+          } else {
+            return Center(
+              child: CircularProgressIndicator(
+                  color: Theme.of(context).primaryColor),
+            );
+          }
+        });
+  }
+
+  noGroupWidget() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+              onTap: () {
+                popUpDialog(context);
+              },
+              child: Icon(Icons.add_circle, color: Colors.grey[700], size: 75)),
+          const SizedBox(height: 20),
+          const Text(
+            'У Вас не створено жодного чату, створіть новий чат, або знайдіть в пошуку!',
+            textAlign: TextAlign.center,
+          )
+        ],
       ),
     );
   }
