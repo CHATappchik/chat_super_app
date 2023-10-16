@@ -3,10 +3,10 @@ import 'package:chat_super_app/screens/profile_screen.dart';
 import 'package:chat_super_app/screens/settings_screen.dart';
 import 'package:chat_super_app/services/auth_service.dart';
 import 'package:chat_super_app/services/database_servise.dart';
+import 'package:chat_super_app/services/often_abused_function.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../bloc/theme_cubit.dart';
 import '../bloc/theme_state.dart';
 import 'auth/login_page.dart';
@@ -214,33 +214,7 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
       body: groupList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text("Create chat"),
-                content: const SingleChildScrollView(
-                  child: ListBody(
-                    children: <Widget>[],
-                  ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text("CANCEL"),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text("CREATE"),
-                  ),
-                ],
-              );
-            },
-          );
+          popUpDialog(context);
         },
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColor,
@@ -272,48 +246,62 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                             color: Theme.of(context).primaryColor),
                       )
                     : TextField(
-                  onChanged: (val) {
-                    setState(() {
-                      groupName = val;
-                    });
-                  },
-                  style: const TextStyle(color: Colors.black),
+                        onChanged: (val) {
+                          setState(() {
+                            groupName = val;
+                          });
+                        },
+                        style: const TextStyle(color: Colors.black),
                         decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                                borderRadius: BorderRadius.circular(20)),
-                            errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.red,
-                                ),
-                                borderRadius: BorderRadius.circular(20)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                                borderRadius: BorderRadius.circular(20)),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              borderRadius: BorderRadius.circular(20)),
+                          errorBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.red,
+                              ),
+                              borderRadius: BorderRadius.circular(20)),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              borderRadius: BorderRadius.circular(20)),
                         ),
                       ),
               ],
             ),
             actions: [
               ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor
-                ),
-                  child: const Text('ВІДМІНА'),
+                    backgroundColor: Theme.of(context).primaryColor),
+                child: const Text(
+                    style: TextStyle(color: Colors.white), 'ВІДМІНА'),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  if (groupName != '') {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    DataBaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+                        .createGroup(userName,
+                            FirebaseAuth.instance.currentUser!.uid, groupName)
+                        .whenComplete(() {
+                      _isLoading = false;
+                    });
+                    Navigator.of(context).pop();
+                    showSnackBar(context, Colors.green, 'Чат створено успішно');
+                  }
+                },
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor
-                ),
-                child: const Text('СТВОРИТИ'),
+                    backgroundColor: Theme.of(context).primaryColor),
+                child: const Text(
+                    style: TextStyle(color: Colors.white), 'СТВОРИТИ'),
               )
             ],
           );
@@ -347,22 +335,14 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
   noGroupWidget() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          GestureDetector(
-              onTap: () {
-                popUpDialog(context);
-              },
-              child: Icon(Icons.add_circle, color: Colors.grey[700], size: 75)),
-          const SizedBox(height: 20),
-          const Text(
-            'У Вас не створено жодного чату, створіть новий чат, або знайдіть в пошуку!',
-            textAlign: TextAlign.center,
-          )
-        ],
-      ),
-    );
+      child:
+          const Center(
+            child: Text(
+              'У Вас не створено жодного чату, створіть новий чат, або знайдіть в пошуку!',
+              textAlign: TextAlign.center,
+            ),
+          ),
+      );
+
   }
 }
