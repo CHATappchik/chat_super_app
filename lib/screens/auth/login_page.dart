@@ -170,6 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                                             .get();
 
                                     if (querySnapshot.docs.isNotEmpty) {
+                                      showSnackBar(context, Colors.green, 'Ви успішно авторизовані');
                                       // Якщо користувач з таким емейлом існує, переходьте на наступний екран
                                       nextScreen(
                                           context, const ChatsListScreen());

@@ -43,9 +43,7 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
         userName = val!;
       });
     });
-
     // getting the list snapshots in our stream
-
     await DataBaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .getUserGroups()
         .then((snapshot) {
@@ -316,7 +314,11 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
           if (snapshot.hasData) {
             if (snapshot.data['groups'] != null) {
               if (snapshot.data['groups'].length != 0) {
-                return const Text('HELOOO');
+                return ListView.builder(
+                  itemCount: snapshot.data['groups'].length,
+                    itemBuilder: (context, index){
+                    return Text(snapshot.data['groups'][index]);
+                    });
               } else {
                 return noGroupWidget();
               }
