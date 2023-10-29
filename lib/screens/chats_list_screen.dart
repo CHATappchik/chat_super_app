@@ -1,6 +1,7 @@
 import 'package:chat_super_app/component/group_tile.dart';
 import 'package:chat_super_app/helper/helper_file.dart';
 import 'package:chat_super_app/screens/profile_screen.dart';
+import 'package:chat_super_app/screens/search_screen.dart';
 import 'package:chat_super_app/screens/settings_screen.dart';
 import 'package:chat_super_app/services/auth_service.dart';
 import 'package:chat_super_app/services/database_servise.dart';
@@ -74,6 +75,8 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
           IconButton(
             onPressed: () {
               // буде реалізовано пошук
+              nextScreen(context, const SearchPage());
+
             },
             icon: const Icon(Icons.search),
           )
