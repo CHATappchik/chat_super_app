@@ -13,4 +13,9 @@ const textInputDecoration = InputDecoration(
   ),
 );
 
+const appBarTitle = TextStyle(
+    color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24
+);
+
+
 

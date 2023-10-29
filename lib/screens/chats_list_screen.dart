@@ -1,3 +1,4 @@
+import 'package:chat_super_app/component/group_tile.dart';
 import 'package:chat_super_app/helper/helper_file.dart';
 import 'package:chat_super_app/screens/profile_screen.dart';
 import 'package:chat_super_app/screens/settings_screen.dart';
@@ -30,6 +31,15 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
   void initState() {
     super.initState();
     gettingUserData();
+  }
+
+  //string manipulation
+  String getId(String res) {
+    return res.substring(0,res.indexOf('_'));
+  }
+
+  String getName(String res) {
+    return res.substring(res.indexOf('_')+1);
   }
 
   gettingUserData() async {
@@ -317,7 +327,11 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                 return ListView.builder(
                   itemCount: snapshot.data['groups'].length,
                     itemBuilder: (context, index){
-                    return Text(snapshot.data['groups'][index]);
+                    int reverseIndex = snapshot.data['groups'].length - index - 1;
+                      return GroupTile(
+                        userName: snapshot.data['fullName'],
+                        groupId: getId(snapshot.data ['groups'][reverseIndex]),
+                        groupName: getName(snapshot.data ['groups'][reverseIndex]));
                     });
               } else {
                 return noGroupWidget();
