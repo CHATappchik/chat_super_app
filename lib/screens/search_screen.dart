@@ -19,6 +19,7 @@ class _SearchPageState extends State<SearchPage> {
   QuerySnapshot? searchSnapshot;
   bool hasUserSearched = false;
   String userName = '';
+  bool isJoined = false;
   User? user;
 
   @override
@@ -27,7 +28,7 @@ class _SearchPageState extends State<SearchPage> {
     getCurentUserIdAndName();
   }
 
-  getCurentUserIdAndName() async{
+  getCurentUserIdAndName() async {
     await HelperFunction.getUserNameFromSF().then((value) {
       setState(() {
         userName = value!;
@@ -36,14 +37,20 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  String getName(String r) {
+    return r.substring(r.indexOf('_') + 1);
+  }
+
+  String getId(String res) {
+    return res.substring(0, res.indexOf('_'));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Theme
-              .of(context)
-              .primaryColor,
+          backgroundColor: Theme.of(context).primaryColor,
           title: const Text(
             'Пошук',
             style: appBarTitle,
@@ -52,9 +59,7 @@ class _SearchPageState extends State<SearchPage> {
         body: Column(
           children: [
             Container(
-              color: Theme
-                  .of(context)
-                  .primaryColor,
+              color: Theme.of(context).primaryColor,
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               child: Row(
                 children: [
@@ -91,10 +96,8 @@ class _SearchPageState extends State<SearchPage> {
             ),
             isLoading
                 ? Center(
-                child: CircularProgressIndicator(
-                    color: Theme
-                        .of(context)
-                        .primaryColor))
+                    child: CircularProgressIndicator(
+                        color: Theme.of(context).primaryColor))
                 : groupList(),
           ],
         ));
@@ -118,23 +121,80 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   groupList() {
-    return hasUserSearched ?
-    ListView.builder(
-        shrinkWrap: true,
-        itemCount: searchSnapshot!.docs.length,
-        itemBuilder: (context, index) {
-          return groupTile(
-            userName,
-            searchSnapshot!.docs[index]['groupId'],
-            searchSnapshot!.docs[index]['groupName'],
-            searchSnapshot!.docs[index]['admin'],
-          );
-        }
-    )
+    return hasUserSearched
+        ? ListView.builder(
+            shrinkWrap: true,
+            itemCount: searchSnapshot!.docs.length,
+            itemBuilder: (context, index) {
+              return groupTile(
+                userName,
+                searchSnapshot!.docs[index]['groupId'],
+                searchSnapshot!.docs[index]['groupName'],
+                searchSnapshot!.docs[index]['admin'],
+              );
+            })
         : Container();
   }
 
-  Widget groupTile(String userName, String groupId, String groupName, String admin) {
-    return Text('Ага');
+  joinedOrNot(
+      String userName, String groupId, String groupName, String admin) async {
+    await DataBaseService(uid: user!.uid)
+        .isUserJoined(groupName, groupId, userName)
+        .then((value) {
+      setState(() {
+        isJoined = value;
+      });
+    });
+  }
+
+  Widget groupTile(
+      String userName, String groupId, String groupName, String admin) {
+    //function to check whether user already exists i n group
+    joinedOrNot(userName, groupId, groupName, admin);
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      leading: CircleAvatar(
+        radius: 30,
+        backgroundColor: Theme.of(context).primaryColor,
+        child: Text(
+          groupName.substring(0, 1).toUpperCase(),
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+      title: Text(
+        groupName,
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+      subtitle: Text('Адмін: ${getName(admin)}'),
+      trailing: InkWell(
+        onTap: () async{},
+        child: isJoined
+            ? Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.black,
+                  border: Border.all(color: Colors.white, width: 1),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: const Text(
+                  'Приєднано',
+                  style: TextStyle(color: Colors.white),
+                ),
+              )
+            : Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Theme.of(context).primaryColor,
+          ),
+          padding:
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: const Text(
+            'Приєднатися',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ),
+    );
   }
 }
