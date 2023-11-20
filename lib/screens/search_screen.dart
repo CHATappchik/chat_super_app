@@ -1,5 +1,7 @@
 import 'package:chat_super_app/helper/helper_file.dart';
+import 'package:chat_super_app/screens/chat_page.dart';
 import 'package:chat_super_app/services/database_servise.dart';
+import 'package:chat_super_app/services/often_abused_function.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -50,16 +52,21 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme
+              .of(context)
+              .primaryColor,
           title: const Text(
             'Пошук',
             style: appBarTitle,
           ),
+          centerTitle: true,
         ),
         body: Column(
           children: [
             Container(
-              color: Theme.of(context).primaryColor,
+              color: Theme
+                  .of(context)
+                  .primaryColor,
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               child: Row(
                 children: [
@@ -96,8 +103,10 @@ class _SearchPageState extends State<SearchPage> {
             ),
             isLoading
                 ? Center(
-                    child: CircularProgressIndicator(
-                        color: Theme.of(context).primaryColor))
+                child: CircularProgressIndicator(
+                    color: Theme
+                        .of(context)
+                        .primaryColor))
                 : groupList(),
           ],
         ));
@@ -123,21 +132,21 @@ class _SearchPageState extends State<SearchPage> {
   groupList() {
     return hasUserSearched
         ? ListView.builder(
-            shrinkWrap: true,
-            itemCount: searchSnapshot!.docs.length,
-            itemBuilder: (context, index) {
-              return groupTile(
-                userName,
-                searchSnapshot!.docs[index]['groupId'],
-                searchSnapshot!.docs[index]['groupName'],
-                searchSnapshot!.docs[index]['admin'],
-              );
-            })
+        shrinkWrap: true,
+        itemCount: searchSnapshot!.docs.length,
+        itemBuilder: (context, index) {
+          return groupTile(
+            userName,
+            searchSnapshot!.docs[index]['groupId'],
+            searchSnapshot!.docs[index]['groupName'],
+            searchSnapshot!.docs[index]['admin'],
+          );
+        })
         : Container();
   }
 
-  joinedOrNot(
-      String userName, String groupId, String groupName, String admin) async {
+  joinedOrNot(String userName, String groupId, String groupName,
+      String admin) async {
     await DataBaseService(uid: user!.uid)
         .isUserJoined(groupName, groupId, userName)
         .then((value) {
@@ -147,15 +156,17 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  Widget groupTile(
-      String userName, String groupId, String groupName, String admin) {
+  Widget groupTile(String userName, String groupId, String groupName,
+      String admin) {
     //function to check whether user already exists i n group
     joinedOrNot(userName, groupId, groupName, admin);
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       leading: CircleAvatar(
         radius: 30,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme
+            .of(context)
+            .primaryColor,
         child: Text(
           groupName.substring(0, 1).toUpperCase(),
           style: const TextStyle(color: Colors.white),
@@ -167,25 +178,48 @@ class _SearchPageState extends State<SearchPage> {
       ),
       subtitle: Text('Адмін: ${getName(admin)}'),
       trailing: InkWell(
-        onTap: () async{},
+        onTap: () async {
+          await DataBaseService(uid: user!.uid).toggleGroupJoin(
+              groupId, userName, groupName);
+          if (isJoined) {
+            setState(() {
+              isJoined = !isJoined;
+            });
+            showSnackBar(context, Colors.green, 'Приєднання до групи УСПІШНЕ');
+            Future.delayed(const Duration(seconds: 2),
+                    () {
+                  nextScreen(context, ChatPage(groupId: groupId,
+                      groupName: groupName,
+                      userName: userName));
+                }
+            );
+          } else {
+            setState(() {
+              isJoined = !isJoined;
+            });
+            showSnackBar(context, Colors.redAccent, 'Вихід з групи $groupName');
+          }
+        },
         child: isJoined
             ? Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.black,
-                  border: Border.all(color: Colors.white, width: 1),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: const Text(
-                  'Приєднано',
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.black,
+            border: Border.all(color: Colors.white, width: 1),
+          ),
+          padding:
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: const Text(
+            'Приєднано',
+            style: TextStyle(color: Colors.white),
+          ),
+        )
             : Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: Theme.of(context).primaryColor,
+            color: Theme
+                .of(context)
+                .primaryColor,
           ),
           padding:
           const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
