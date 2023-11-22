@@ -27,6 +27,7 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
   Stream? groups;
   bool _isLoading = false;
   String groupName = "";
+  String pickPath = "";
 
   @override
   void initState() {
@@ -54,6 +55,12 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
         userName = val!;
       });
     });
+    await HelperFunction.getUserPickFromSF().then((val) {
+      setState(() {
+        pickPath = val!;
+      });
+    });
+
     // getting the list snapshots in our stream
     await DataBaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .getUserGroups()
@@ -94,11 +101,13 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 50),
           children: <Widget>[
+            pickPath.isEmpty ?
             Icon(
               Icons.account_circle,
               size: 150,
               color: Colors.grey[700],
-            ),
+            )
+            : Image.network(pickPath),
             const SizedBox(height: 15),
             Text(
               userName,
@@ -113,7 +122,7 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            ProfileScreen(userName: userName, email: email)));
+                            ProfileScreen(userName: userName, email: email, pick: pickPath)));
               },
               selectedColor: Theme.of(context).primaryColor,
               selected: true,

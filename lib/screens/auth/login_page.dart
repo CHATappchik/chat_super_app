@@ -170,6 +170,10 @@ class _LoginPageState extends State<LoginPage> {
                                             .get();
 
                                     if (querySnapshot.docs.isNotEmpty) {
+                                      await HelperFunction.saveUserLoggedInStatus(true);
+                                      await HelperFunction.saveUserEmailSF(user.email!);
+                                      await HelperFunction.saveUserNameSF(user.displayName!);
+                                      await HelperFunction.saveUserPickSF(user.photoURL!);
                                       showSnackBar(context, Colors.green, 'Ви успішно авторизовані');
                                       // Якщо користувач з таким емейлом існує, переходьте на наступний екран
                                       nextScreen(
@@ -231,6 +235,7 @@ class _LoginPageState extends State<LoginPage> {
           await HelperFunction.saveUserLoggedInStatus(true);
           await HelperFunction.saveUserEmailSF(email);
           await HelperFunction.saveUserNameSF(snapshot.docs[0]['fullName']);
+          await HelperFunction.saveUserPickSF(snapshot.docs[0]['profilePic']);
           nextScreenReplace(context, ChatsListScreen());
         } else {
           showSnackBar(context, Colors.red, value);

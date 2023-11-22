@@ -95,7 +95,7 @@ class _GroupInfoState extends State<GroupInfo> {
                         style: const TextStyle(fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(height: 5),
-                      Text('Адміністратор : ${getName(widget.adminName)}'),
+                      Text('Адміністратор :\n ${getName(widget.adminName)}'),
                     ],
                   )
                 ],

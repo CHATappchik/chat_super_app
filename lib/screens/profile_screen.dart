@@ -1,12 +1,20 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   String userName = "";
   String email = "";
+  String pick = "";
 
-  ProfileScreen({Key? key, required this.userName, required this.email})
+  ProfileScreen({
+    Key? key,
+    required this.userName,
+    required this.email,
+    required this.pick
+  })
       : super(key: key);
 
   @override
@@ -15,6 +23,20 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   AuthService authService = AuthService();
+  File? _imageFile;
+
+  getImage() async{
+    final ImagePicker picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _imageFile = File(image!.path);
+    });
+  }
+  @override
+  void initState() {
+    //getImage();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +57,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              widget.pick.isEmpty?
               Icon(
                 Icons.account_circle,
-                size: 200,
-                color: Colors.grey[700],
+                size: 100,
+                color: Colors.grey[700],)
+                  : Image.network(
+                  widget.pick,
+                height: 100,
               ),
               const SizedBox(height: 45),
               Row(
