@@ -38,7 +38,7 @@ class DataBaseService {
     DocumentReference groupDocumentReference = await groupCollection.add({
       'groupName': groupName,
       'groupIcon': '',
-      'admin': '${id}_${userName}',
+      'admin': '${id}_$userName',
       'members' : [],
       'groupId' : '',
       'recentMessage' : '',
@@ -46,7 +46,7 @@ class DataBaseService {
     });
     // update the members
     await groupDocumentReference.update({
-      'members' : FieldValue.arrayUnion(['${uid}_${userName}']),
+      'members' : FieldValue.arrayUnion(['${uid}_$userName']),
       'groupId' : groupDocumentReference.id,
     });
 
@@ -123,6 +123,15 @@ class DataBaseService {
    }
 
  }
- 
+ //send message
+
+  sendMessages(String groupId, Map<String, dynamic> chatMessageData) async{
+    groupCollection.doc(groupId).collection('messages').add(chatMessageData);
+    groupCollection.doc(groupId).update({
+      'recentMessage': chatMessageData['message'],
+      'recentMessageSender': chatMessageData['sender'],
+      'recentMessageTime' : chatMessageData['time'].toString(),
+    });
+  }
 
 }

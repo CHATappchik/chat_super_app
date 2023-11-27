@@ -37,11 +37,11 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
 
   //string manipulation
   String getId(String res) {
-    return res.substring(0,res.indexOf('_'));
+    return res.substring(0, res.indexOf('_'));
   }
 
   String getName(String res) {
-    return res.substring(res.indexOf('_')+1);
+    return res.substring(res.indexOf('_') + 1);
   }
 
   gettingUserData() async {
@@ -83,7 +83,6 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
             onPressed: () {
               // буде реалізовано пошук
               nextScreen(context, const SearchPage());
-
             },
             icon: const Icon(Icons.search),
           )
@@ -101,13 +100,13 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 50),
           children: <Widget>[
-            pickPath.isEmpty ?
-            Icon(
-              Icons.account_circle,
-              size: 150,
-              color: Colors.grey[700],
-            )
-            : Image.network(pickPath),
+            pickPath.isEmpty
+                ? Icon(
+                    Icons.account_circle,
+                    size: 150,
+                    color: Colors.grey[700],
+                  )
+                : Image.network(pickPath),
             const SizedBox(height: 15),
             Text(
               userName,
@@ -121,8 +120,8 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            ProfileScreen(userName: userName, email: email, pick: pickPath)));
+                        builder: (context) => ProfileScreen(
+                            userName: userName, email: email, pick: pickPath)));
               },
               selectedColor: Theme.of(context).primaryColor,
               selected: true,
@@ -271,7 +270,6 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                             groupName = val;
                           });
                         },
-                        style: const TextStyle(color: Colors.black),
                         decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
@@ -337,13 +335,15 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
             if (snapshot.data['groups'] != null) {
               if (snapshot.data['groups'].length != 0) {
                 return ListView.builder(
-                  itemCount: snapshot.data['groups'].length,
-                    itemBuilder: (context, index){
-                    int reverseIndex = snapshot.data['groups'].length - index - 1;
+                    itemCount: snapshot.data['groups'].length,
+                    itemBuilder: (context, index) {
+                      int reverseIndex =
+                          snapshot.data['groups'].length - index - 1;
                       return GroupTile(
-                        userName: snapshot.data['fullName'],
-                        groupId: getId(snapshot.data ['groups'][reverseIndex]),
-                        groupName: getName(snapshot.data ['groups'][reverseIndex]));
+                          userName: snapshot.data['fullName'],
+                          groupId: getId(snapshot.data['groups'][reverseIndex]),
+                          groupName:
+                              getName(snapshot.data['groups'][reverseIndex]));
                     });
               } else {
                 return noGroupWidget();
@@ -363,14 +363,12 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
   noGroupWidget() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 25),
-      child:
-          const Center(
-            child: Text(
-              'У Вас не створено жодного чату, створіть новий чат, або знайдіть в пошуку!',
-              textAlign: TextAlign.center,
-            ),
-          ),
-      );
-
+      child: const Center(
+        child: Text(
+          'У Вас не створено жодного чату, створіть новий чат, або знайдіть в пошуку!',
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 }
