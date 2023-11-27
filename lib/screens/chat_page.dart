@@ -119,26 +119,28 @@ class _ChatPageState extends State<ChatPage> {
     return StreamBuilder(
         stream: chats,
         builder: (context, AsyncSnapshot snapshot) {
-          return snapshot.hasData ? ListView.builder(
-            itemCount: snapshot.data.docs.length,
-              itemBuilder: (context, index) {
-              return MessageTile(
-                  message: snapshot.data.docs[index]['message'],
-                  sender: snapshot.data.docs[index]['sender'],
-                  sendByMe: widget.userName == snapshot.data.docs[index]['sender']
-              );
-              }
-              )
+          return snapshot.hasData
+              ? ListView.builder(
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, index) {
+                    return MessageTile(
+                      message: snapshot.data.docs[index]['message'],
+                      sender: snapshot.data.docs[index]['sender'],
+                      time: snapshot.data.docs[index]['time'],
+                      sendByMe: widget.userName ==
+                          snapshot.data.docs[index]['sender'],
+                    );
+                  })
               : Container();
-        }
-    );
+        });
   }
+
   sendMessages() {
-    if(messageController.text.isNotEmpty) {
-      Map<String, dynamic> chatMessageMap =  {
-        'message' : messageController.text,
-        'sender' : widget.userName,
-        'time' : DateTime.now().millisecondsSinceEpoch,
+    if (messageController.text.isNotEmpty) {
+      Map<String, dynamic> chatMessageMap = {
+        'message': messageController.text,
+        'sender': widget.userName,
+        'time': Timestamp.now(),
       };
       DataBaseService().sendMessages(widget.groupId, chatMessageMap);
       setState(() {

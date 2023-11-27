@@ -130,7 +130,7 @@ class DataBaseService {
     groupCollection.doc(groupId).update({
       'recentMessage': chatMessageData['message'],
       'recentMessageSender': chatMessageData['sender'],
-      'recentMessageTime' : chatMessageData['time'].toString(),
+      'recentMessageTime' : chatMessageData['time'],
     });
   }
 

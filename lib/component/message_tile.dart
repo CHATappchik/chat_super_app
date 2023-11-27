@@ -1,15 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class MessageTile extends StatefulWidget {
   final String message;
   final String sender;
+  final Timestamp time;
   final bool sendByMe;
 
   const MessageTile({
     super.key,
     required this.message,
     required this.sender,
-    required this.sendByMe
+    required this.time,
+    required this.sendByMe,
   });
 
   @override
@@ -20,11 +23,64 @@ class _MessageTileState extends State<MessageTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(widget.sender.toUpperCase()),
-        ],
+      padding: EdgeInsets.only(
+        top: 4,
+        bottom: 4,
+        left:  widget.sendByMe ? 0 : 24,
+        right: widget.sendByMe ? 24 : 0,
+      ),
+      alignment: widget.sendByMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: widget.sendByMe ? const EdgeInsets.only(left: 30) : const EdgeInsets.only(right: 30),
+        padding: const EdgeInsets.only(top: 17, bottom: 17, left: 20, right: 20),
+        decoration: BoxDecoration(
+          borderRadius: widget.sendByMe ? const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+            bottomLeft: Radius.circular(20),
+          )
+              : const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+          color: widget.sendByMe ? Theme.of(context).primaryColor
+              : Colors.grey[700],
+        ),
+        child:
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            widget.sendByMe ? const SizedBox() :
+            Text(
+              widget.sender.toUpperCase(),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  fontSize: 16,
+              color: Colors.white,
+              ),
+            ),
+            Text(
+              '${widget.time.toDate().hour}:${widget.time.toDate().minute}',
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontSize: 9,
+                color: Colors.white,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
