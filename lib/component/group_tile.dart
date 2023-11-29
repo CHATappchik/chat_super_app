@@ -1,7 +1,7 @@
 import 'package:chat_super_app/services/often_abused_function.dart';
 import 'package:flutter/material.dart';
-
 import '../screens/chat_page.dart';
+import '../services/database_servise.dart';
 
 class GroupTile extends StatefulWidget {
   final String userName;
@@ -19,6 +19,25 @@ class GroupTile extends StatefulWidget {
 }
 
 class _GroupTileState extends State<GroupTile> {
+
+  String adminGroup = '';
+
+  @override
+  void initState() {
+    getAdmin();
+    super.initState();
+  }
+
+
+  getAdmin() {
+    DataBaseService().getGroupAdmin(widget.groupId).then((value) {
+      setState(() {
+        adminGroup = value.substring(value.indexOf('_') + 1);
+      });
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -51,6 +70,17 @@ class _GroupTileState extends State<GroupTile> {
             'Приєднатись до розмови як ${widget.userName}',
             style: const TextStyle(fontSize: 13),
           ),
+          trailing: widget.userName == adminGroup ?
+          IconButton(
+              onPressed: () {
+                DataBaseService().deleteGroup(widget.groupId, widget.groupName);
+                },
+              icon: Icon(
+                  Icons.delete_sweep,
+                size: 30,
+                color: Theme.of(context).primaryColor,
+              ))
+              : const SizedBox(),
         ),
       ),
     );

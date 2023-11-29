@@ -84,6 +84,7 @@ class _SearchPageState extends State<SearchPage> {
                   GestureDetector(
                     onTap: () {
                       initiateSerchMethod();
+                      //searchUser();
                     },
                     child: Container(
                       width: 40,
@@ -107,7 +108,9 @@ class _SearchPageState extends State<SearchPage> {
                     color: Theme
                         .of(context)
                         .primaryColor))
-                : groupList(),
+                :
+            //memberEmailList(),
+            groupList(),
           ],
         ));
   }
@@ -119,6 +122,23 @@ class _SearchPageState extends State<SearchPage> {
       });
       await DataBaseService()
           .searchByName(searchController.text)
+          .then((snapshot) {
+        setState(() {
+          searchSnapshot = snapshot;
+          isLoading = false;
+          hasUserSearched = true;
+        });
+      });
+    }
+  }
+
+  searchUser() async{
+    if (searchController.text.isNotEmpty) {
+      setState(() {
+        isLoading = true;
+      });
+      await DataBaseService()
+          .searchByEmail(searchController.text)
           .then((snapshot) {
         setState(() {
           searchSnapshot = snapshot;
@@ -145,6 +165,21 @@ class _SearchPageState extends State<SearchPage> {
         : Container();
   }
 
+  memberEmailList() {
+    return hasUserSearched
+        ? ListView.builder(
+        shrinkWrap: true,
+        itemCount: searchSnapshot!.docs.length,
+        itemBuilder: (context, index) {
+          return memberTile(
+            user!.uid,
+            userName,
+            searchSnapshot!.docs[index]['email'],
+          );
+        })
+        : Container();
+  }
+
   joinedOrNot(String userName, String groupId, String groupName,
       String admin) async {
     await DataBaseService(uid: user!.uid)
@@ -154,6 +189,20 @@ class _SearchPageState extends State<SearchPage> {
         isJoined = value;
       });
     });
+  }
+
+  Widget memberTile(String admin, String userName, String email) {
+    return ListTile(
+      leading: CircleAvatar(),
+      title: Text(userName),
+      subtitle: Text(email),
+      trailing: ElevatedButton(
+        onPressed: () async {
+            await DataBaseService().createPersonalGroup(admin, userName,true);
+            // Змініть другий параметр, щоб зробити колекцію доступною всім (false) або тільки двом користувачам (true)
+          },
+        child: const Text('Написати'),),
+    );
   }
 
   Widget groupTile(String userName, String groupId, String groupName,

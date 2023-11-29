@@ -81,7 +81,6 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              // буде реалізовано пошук
               nextScreen(context, const SearchPage());
             },
             icon: const Icon(Icons.search),

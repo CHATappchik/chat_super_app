@@ -32,6 +32,23 @@ class DataBaseService {
     return userCollection.doc(uid).snapshots();
   }
 
+  //create personal group
+
+  Future createPersonalGroup(
+      String userName, String secondUserId, bool isPrivate) async {
+    DocumentReference groupDocumentReference = await groupCollection.add({
+      'groupName': '$userName - $secondUserId',
+      'groupIcon': '',
+      'admin': '$userName',
+      'recentMessage': '',
+      'recentMessageSender': '',
+    });
+    await groupCollection.doc('access').set({
+      'public': false,
+      'users': [userName, secondUserId]
+    });
+  }
+
 // creating a group
 
   Future createGroup(String userName, String id, String groupName) async {
@@ -39,99 +56,120 @@ class DataBaseService {
       'groupName': groupName,
       'groupIcon': '',
       'admin': '${id}_$userName',
-      'members' : [],
-      'groupId' : '',
-      'recentMessage' : '',
-      'recentMessageSender' : '',
+      'members': [],
+      'groupId': '',
+      'recentMessage': '',
+      'recentMessageSender': '',
     });
     // update the members
     await groupDocumentReference.update({
-      'members' : FieldValue.arrayUnion(['${uid}_$userName']),
-      'groupId' : groupDocumentReference.id,
+      'members': FieldValue.arrayUnion(['${uid}_$userName']),
+      'groupId': groupDocumentReference.id,
     });
 
     DocumentReference userDocumentReference = userCollection.doc(uid);
     return await userDocumentReference.update({
-      'groups' :
-      FieldValue.arrayUnion(['${groupDocumentReference.id}_$groupName'])
+      'groups':
+          FieldValue.arrayUnion(['${groupDocumentReference.id}_$groupName'])
     });
+  }
+
+  Future deleteGroup(String groupId, String groupName) async {
+    DocumentReference groupDocumentReference = groupCollection.doc(groupId);
+
+    DocumentSnapshot documentSnapshot = await groupDocumentReference.get();
+    List<dynamic> users = await documentSnapshot['members'];
+
+    for (var i in users) {
+      userCollection.doc(i.substring(0, i.indexOf('_'))).update({
+        'groups': FieldValue.arrayRemove(['${groupId}_$groupName'])
+      });
+      await groupDocumentReference.delete();
+    }
   }
 
   //geting the chats
 
-  getChats(String groupId) async{
+  getChats(String groupId) async {
     return groupCollection
         .doc(groupId)
         .collection('messages')
         .orderBy('time')
         .snapshots();
   }
-  Future getGroupAdmin(String groupId) async{
+
+  Future getGroupAdmin(String groupId) async {
     DocumentReference d = groupCollection.doc(groupId);
     DocumentSnapshot documentSnapshot = await d.get();
     return documentSnapshot['admin'];
   }
+
   //get group members
-  getGroupMembers(groupId) async{
+
+  getGroupMembers(groupId) async {
     return groupCollection.doc(groupId).snapshots();
   }
 
   //search
- searchByName(String groupName) {
-    return groupCollection.where('groupName',isEqualTo: groupName).get();
- }
+  searchByName(String groupName) {
+    return groupCollection.where('groupName', isEqualTo: groupName).get();
+  }
 
- //function -> bool
+  searchByEmail(String email) {
+    return userCollection.where('email', isEqualTo: email).get();
+  }
 
- Future<bool> isUserJoined(String groupName, String groupId, String userName) async{
+  //function -> bool
+
+  Future<bool> isUserJoined(
+      String groupName, String groupId, String userName) async {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     DocumentSnapshot documentSnapshot = await userDocumentReference.get();
 
-    List<dynamic> groups =  await documentSnapshot['groups'];
-    if(groups.contains('${groupId}_$groupName')) {
+    List<dynamic> groups = await documentSnapshot['groups'];
+    if (groups.contains('${groupId}_$groupName')) {
       return true;
+    } else {
+      return false;
     }
-    else {
-     return false;
-    }
- }
+  }
 
- //toggling the group join/exit
- Future toggleGroupJoin(String groupId, String userName, String groupName) async{
+  //toggling the group join/exit
+  Future toggleGroupJoin(
+      String groupId, String userName, String groupName) async {
     //doc reference
     DocumentReference userDocumentReference = userCollection.doc(uid);
     DocumentReference groupDocumentReference = groupCollection.doc(groupId);
 
     DocumentSnapshot documentSnapshot = await userDocumentReference.get();
-    List<dynamic> groups =  await documentSnapshot['groups'];
+    List<dynamic> groups = await documentSnapshot['groups'];
 
     // if user has our groups -> then remove then or also in other part re join
-   if(groups.contains('${groupId}_$groupName')) {
-     await userDocumentReference.update({
-       'groups': FieldValue.arrayRemove(['${groupId}_$groupName'])
-     });
-     await groupDocumentReference.update({
-       'members': FieldValue.arrayRemove(['${uid}_$userName'])
-     });
-   }else {
-     await userDocumentReference.update({
-       'groups': FieldValue.arrayUnion(['${groupId}_$groupName'])
-     });
-     await groupDocumentReference.update({
-       'members': FieldValue.arrayUnion(['${uid}_$userName'])
-     });
-   }
+    if (groups.contains('${groupId}_$groupName')) {
+      await userDocumentReference.update({
+        'groups': FieldValue.arrayRemove(['${groupId}_$groupName'])
+      });
+      await groupDocumentReference.update({
+        'members': FieldValue.arrayRemove(['${uid}_$userName'])
+      });
+    } else {
+      await userDocumentReference.update({
+        'groups': FieldValue.arrayUnion(['${groupId}_$groupName'])
+      });
+      await groupDocumentReference.update({
+        'members': FieldValue.arrayUnion(['${uid}_$userName'])
+      });
+    }
+  }
 
- }
- //send message
+  //send message
 
-  sendMessages(String groupId, Map<String, dynamic> chatMessageData) async{
+  sendMessages(String groupId, Map<String, dynamic> chatMessageData) async {
     groupCollection.doc(groupId).collection('messages').add(chatMessageData);
     groupCollection.doc(groupId).update({
       'recentMessage': chatMessageData['message'],
       'recentMessageSender': chatMessageData['sender'],
-      'recentMessageTime' : chatMessageData['time'],
+      'recentMessageTime': chatMessageData['time'],
     });
   }
-
 }
