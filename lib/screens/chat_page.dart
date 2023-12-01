@@ -92,6 +92,23 @@ class _ChatPageState extends State<ChatPage> {
                   const SizedBox(width: 12),
                   GestureDetector(
                     onTap: () {
+                      sendMedia();
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.add, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  GestureDetector(
+                    onTap: () {
                       sendMessages();
                     },
                     child: Container(
@@ -147,5 +164,9 @@ class _ChatPageState extends State<ChatPage> {
         messageController.clear();
       });
     }
+  }
+
+  sendMedia() {
+
   }
 }

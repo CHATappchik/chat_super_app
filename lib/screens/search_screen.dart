@@ -109,7 +109,7 @@ class _SearchPageState extends State<SearchPage> {
                         .of(context)
                         .primaryColor))
                 :
-            //memberEmailList(),
+              //memberEmailList(),
             groupList(),
           ],
         ));
@@ -172,8 +172,8 @@ class _SearchPageState extends State<SearchPage> {
         itemCount: searchSnapshot!.docs.length,
         itemBuilder: (context, index) {
           return memberTile(
-            user!.uid,
             userName,
+            searchSnapshot!.docs[index]['fullName'],
             searchSnapshot!.docs[index]['email'],
           );
         })
@@ -198,7 +198,9 @@ class _SearchPageState extends State<SearchPage> {
       subtitle: Text(email),
       trailing: ElevatedButton(
         onPressed: () async {
-            await DataBaseService().createPersonalGroup(admin, userName,true);
+          print('ADMIN : $admin');
+          print('user : $userName');
+            await DataBaseService().createPersonalGroup(admin, userName, true);
             // Змініть другий параметр, щоб зробити колекцію доступною всім (false) або тільки двом користувачам (true)
           },
         child: const Text('Написати'),),

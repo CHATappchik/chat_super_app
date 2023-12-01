@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class DataBaseService {
   final String? uid;
@@ -10,6 +12,8 @@ class DataBaseService {
 
   final CollectionReference groupCollection =
       FirebaseFirestore.instance.collection('groups');
+
+  final Reference reference = FirebaseStorage.instance.ref();
 
   Future savingUserData(String fullName, String email) async {
     return await userCollection.doc(uid).set({
@@ -42,9 +46,7 @@ class DataBaseService {
       'admin': '$userName',
       'recentMessage': '',
       'recentMessageSender': '',
-    });
-    await groupCollection.doc('access').set({
-      'public': false,
+      'public': isPrivate,
       'users': [userName, secondUserId]
     });
   }
@@ -86,6 +88,14 @@ class DataBaseService {
       });
       await groupDocumentReference.delete();
     }
+  }
+  // update path image
+
+  Future updatePathImage(String path) async{
+    DocumentReference userDocumentReference = userCollection.doc(uid);
+    return await userDocumentReference.update({
+      'profilePic': path
+    });
   }
 
   //geting the chats
@@ -171,5 +181,19 @@ class DataBaseService {
       'recentMessageSender': chatMessageData['sender'],
       'recentMessageTime': chatMessageData['time'],
     });
+  }
+
+  Future <String> uploadFileInStoradge(pikedFile) async{
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    Reference referenceDirection = reference.child('files');
+    Reference referenceImages = referenceDirection.child(fileName);
+
+    final file = File(pikedFile!.path!);
+
+    await referenceImages.putFile(file);
+
+    final imageUrl = await referenceImages.getDownloadURL();
+
+    return imageUrl ;
   }
 }
