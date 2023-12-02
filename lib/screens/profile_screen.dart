@@ -31,6 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future getImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
+    //final image = await picker.pickImage(source: ImageSource.camera);
 
     if (image == null) return;
     setState(() {
@@ -40,8 +41,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool _isPick = true;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -60,56 +59,182 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               widget.pick.isEmpty
-                  ? GestureDetector(
-                      onTap: () {
-                        getImageFromGallery().whenComplete(() {
-                          DataBaseService()
-                              .uploadFileInStoradge(_imageFile)
-                              .then((value) {
-                            setState(() {
-                              widget.pick = value;
-                              DataBaseService(
-                                      uid: authService
-                                          .firebaseAuth.currentUser!.uid)
-                                  .updatePathImage(widget.pick);
-                              HelperFunction.saveUserPickSF(widget.pick);
-                              nextScreenReplace(
-                                  context, const ChatsListScreen());
-                              //ProfileScreen(userName: widget.userName, email: widget.email, pick: widget.pick,));
-                            });
-                          });
-                        });
-                      },
-                      child: Icon(
-                        Icons.account_circle,
-                        size: 100,
-                        color: Colors.grey[700],
-                      ),
+                  ? Column(
+                      children: [
+                        Icon(
+                          Icons.account_circle,
+                          size: 145,
+                          color: Colors.grey[700],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                DataBaseService()
+                                    .getImageFromCamera()
+                                    .then((value) {
+                                  setState(() {
+                                    _imageFile = value;
+                                  });
+                                  if (_imageFile != null) {
+                                    DataBaseService()
+                                        .uploadFileInStoradge(_imageFile)
+                                        .then((value) {
+                                      setState(() {
+                                        widget.pick = value;
+                                        DataBaseService(
+                                                uid: authService.firebaseAuth
+                                                    .currentUser!.uid)
+                                            .updatePathImage(widget.pick);
+                                        HelperFunction.saveUserPickSF(
+                                            widget.pick);
+                                        nextScreenReplace(
+                                            context, const ChatsListScreen());
+                                      });
+                                    });
+                                  } else {
+                                    showSnackBar(context, Colors.green,
+                                        'Фото не вибрано');
+                                  }
+                                });
+                              },
+                              icon: const Icon(Icons.camera),
+                              iconSize: 32,
+                              padding: const EdgeInsets.only(top: 0),
+                            ),
+                            const SizedBox(width: 7),
+                            IconButton(
+                              onPressed: () {
+                                getImageFromGallery().whenComplete(() {
+                                  if (_imageFile != null) {
+                                    DataBaseService()
+                                        .uploadFileInStoradge(_imageFile)
+                                        .then((value) {
+                                      setState(() {
+                                        widget.pick = value;
+                                        DataBaseService(
+                                                uid: authService.firebaseAuth
+                                                    .currentUser!.uid)
+                                            .updatePathImage(widget.pick);
+                                        HelperFunction.saveUserPickSF(
+                                            widget.pick);
+                                        nextScreenReplace(
+                                            context, const ChatsListScreen());
+                                      });
+                                    });
+                                  } else {
+                                    showSnackBar(context, Colors.green,
+                                        'Фото не вибрано');
+                                  }
+                                });
+                              },
+                              icon: const Icon(Icons.edit),
+                              iconSize: 32,
+                              padding: const EdgeInsets.only(top: 0),
+                            ),
+                          ],
+                        )
+                      ],
                     )
-                  : GestureDetector(
-                      onTap: () {
-                        getImageFromGallery().whenComplete(() {
-                          DataBaseService()
-                              .uploadFileInStoradge(_imageFile)
-                              .then((value) {
-                            setState(() {
-                              widget.pick = value;
-                              DataBaseService(
-                                      uid: authService
-                                          .firebaseAuth.currentUser!.uid)
-                                  .updatePathImage(widget.pick);
-                              HelperFunction.saveUserPickSF(widget.pick);
-                              nextScreenReplace(
-                                  context, const ChatsListScreen());
-                              //ProfileScreen(userName: widget.userName, email: widget.email, pick: widget.pick,));
-                            });
-                          });
-                        });
-                      },
-                      child: Image.network(
-                        widget.pick,
-                        height: 100,
-                      ),
+                  : Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 78,
+                          backgroundColor: Theme.of(context).primaryColor,
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              widget.pick,
+                            ),
+                            radius: 75,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                DataBaseService()
+                                    .getImageFromCamera()
+                                    .then((value) {
+                                  setState(() {
+                                    _imageFile = value;
+                                  });
+                                  if (_imageFile != null) {
+                                    DataBaseService()
+                                        .uploadFileInStoradge(_imageFile)
+                                        .then((value) {
+                                      setState(() {
+                                        widget.pick = value;
+                                        DataBaseService(
+                                                uid: authService.firebaseAuth
+                                                    .currentUser!.uid)
+                                            .updatePathImage(widget.pick);
+                                        HelperFunction.saveUserPickSF(
+                                            widget.pick);
+                                        nextScreenReplace(
+                                            context, const ChatsListScreen());
+                                        //ProfileScreen(userName: widget.userName, email: widget.email, pick: widget.pick,));
+                                      });
+                                    });
+                                  } else {
+                                    showSnackBar(context, Colors.green,
+                                        'Фото не вибрано');
+                                  }
+                                });
+                              },
+                              icon: const Icon(Icons.camera),
+                              iconSize: 32,
+                              padding: const EdgeInsets.only(top: 0),
+                            ),
+                            const SizedBox(width: 7),
+                            IconButton(
+                              onPressed: () {
+                                getImageFromGallery().whenComplete(() {
+                                  if (_imageFile != null) {
+                                    DataBaseService()
+                                        .uploadFileInStoradge(_imageFile)
+                                        .then((value) {
+                                      setState(() {
+                                        widget.pick = value;
+                                        DataBaseService(
+                                                uid: authService.firebaseAuth
+                                                    .currentUser!.uid)
+                                            .updatePathImage(widget.pick);
+                                        HelperFunction.saveUserPickSF(
+                                            widget.pick);
+                                        nextScreenReplace(
+                                            context, const ChatsListScreen());
+                                      });
+                                    });
+                                  } else {
+                                    showSnackBar(context, Colors.green,
+                                        'Фото не вибрано');
+                                  }
+                                });
+                              },
+                              icon: const Icon(Icons.edit),
+                              iconSize: 32,
+                              padding: const EdgeInsets.only(top: 0),
+                            ),
+                            const SizedBox(width: 5),
+                            IconButton(
+                              onPressed: () {
+                                DataBaseService(
+                                        uid: authService
+                                            .firebaseAuth.currentUser!.uid)
+                                    .updatePathImage('');
+                                HelperFunction.saveUserPickSF(widget.pick);
+                                nextScreenReplace(
+                                    context, const ChatsListScreen());
+                              },
+                              icon: const Icon(Icons.delete),
+                              iconSize: 32,
+                              padding: const EdgeInsets.only(top: 0),
+                            ),
+                          ],
+                        )
+                      ],
                     ),
               const SizedBox(height: 45),
               Row(

@@ -55,9 +55,12 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
         userName = val!;
       });
     });
-    await HelperFunction.getUserPickFromSF().then((val) {
+
+    await DataBaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getUserImageFromDb()
+        .then((value) {
       setState(() {
-        pickPath = val!;
+        pickPath = value!;
       });
     });
 
@@ -105,7 +108,16 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                     size: 150,
                     color: Colors.grey[700],
                   )
-                : Image.network(pickPath),
+                : CircleAvatar(
+                    radius: 115,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        pickPath,
+                      ),
+                      radius: 110,
+                    ),
+                  ),
             const SizedBox(height: 15),
             Text(
               userName,

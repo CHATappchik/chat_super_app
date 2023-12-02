@@ -26,6 +26,7 @@ class _ChatPageState extends State<ChatPage> {
   Stream<QuerySnapshot>? chats;
   TextEditingController messageController = TextEditingController();
   String admin = '';
+  bool _isText = true;
 
   @override
   void initState() {

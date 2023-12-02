@@ -8,11 +8,12 @@ class GroupInfo extends StatefulWidget {
   final String groupName;
   final String adminName;
 
-  const GroupInfo(
-      {super.key,
-      required this.groupId,
-      required this.groupName,
-      required this.adminName});
+  const GroupInfo({
+    Key? key,
+    required this.groupId,
+    required this.groupName,
+    required this.adminName,
+  }) : super(key: key);
 
   @override
   State<GroupInfo> createState() => _GroupInfoState();
@@ -20,6 +21,7 @@ class GroupInfo extends StatefulWidget {
 
 class _GroupInfoState extends State<GroupInfo> {
   Stream? members;
+  String? avatarPath;
 
   @override
   void initState() {
@@ -42,6 +44,11 @@ class _GroupInfoState extends State<GroupInfo> {
   }
   String getId(String res) {
     return res.substring(0,res.indexOf('_'));
+  }
+  Future getAvatarPath(uid) async {
+    final avatarPath = await DataBaseService(uid: uid).getUserImageFromDb();
+    print('AVATAR PATH : $avatarPath');
+    return avatarPath;
   }
 
   @override
@@ -126,7 +133,8 @@ class _GroupInfoState extends State<GroupInfo> {
                         leading: CircleAvatar(
                           radius: 30,
                           backgroundColor: Theme.of(context).primaryColor,
-                          child: Text(
+                          child: avatarPath == null ?
+                          Text(
                             getName(snapshot.data['members'][index])
                                 .substring(0, 1)
                                 .toUpperCase(),
@@ -134,7 +142,14 @@ class _GroupInfoState extends State<GroupInfo> {
                                 color: Colors.white,
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold),
-                          ),
+                          )
+                              : CircleAvatar(
+                            radius: 28,
+                          backgroundImage: NetworkImage(
+                            avatarPath!,
+                            //'${DataBaseService(uid: await getId(snapshot.data['members'][index])).getUserImageFromDb()}'
+                              ),
+                        ),
                         ),
                         title: Text(getName(snapshot.data['members'][index])),
                         subtitle: Text(getId(snapshot.data['members'][index])),

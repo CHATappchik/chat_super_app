@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 
 class DataBaseService {
   final String? uid;
@@ -89,6 +90,15 @@ class DataBaseService {
       await groupDocumentReference.delete();
     }
   }
+
+  //get image from db
+
+  Future getUserImageFromDb() async{
+    DocumentReference userDocumentReference = userCollection.doc(uid);
+    DocumentSnapshot documentSnapshot = await userDocumentReference.get();
+    return documentSnapshot['profilePic'];
+  }
+
   // update path image
 
   Future updatePathImage(String path) async{
@@ -183,12 +193,32 @@ class DataBaseService {
     });
   }
 
+  Future getImageFromGallery() async {
+    final ImagePicker picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image == null) return;
+
+    return File(image.path);
+
+  }
+
+  Future getImageFromCamera() async {
+    final ImagePicker picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.camera);
+
+    if (image == null) return;
+
+    return File(image.path);
+
+  }
+
   Future <String> uploadFileInStoradge(pikedFile) async{
     String fileName = DateTime.now().millisecondsSinceEpoch.toString();
     Reference referenceDirection = reference.child('files');
     Reference referenceImages = referenceDirection.child(fileName);
 
-    final file = File(pikedFile!.path!);
+    final file = File(pikedFile.path);
 
     await referenceImages.putFile(file);
 
@@ -196,4 +226,5 @@ class DataBaseService {
 
     return imageUrl ;
   }
+
 }
