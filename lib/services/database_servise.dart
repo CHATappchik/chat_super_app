@@ -213,7 +213,7 @@ class DataBaseService {
 
   }
 
-  Future <String> uploadFileInStoradge(pikedFile) async{
+  Future <String> uploadFileInStorage(pikedFile) async{
     String fileName = DateTime.now().millisecondsSinceEpoch.toString();
     Reference referenceDirection = reference.child('files');
     Reference referenceImages = referenceDirection.child(fileName);

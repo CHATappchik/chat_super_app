@@ -26,7 +26,8 @@ class _ChatPageState extends State<ChatPage> {
   Stream<QuerySnapshot>? chats;
   TextEditingController messageController = TextEditingController();
   String admin = '';
-  bool _isText = true;
+  String media = '';
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -93,7 +94,7 @@ class _ChatPageState extends State<ChatPage> {
                   const SizedBox(width: 12),
                   GestureDetector(
                     onTap: () {
-                      sendMedia();
+                      sendMedia(context);
                     },
                     child: Container(
                       height: 50,
@@ -139,6 +140,8 @@ class _ChatPageState extends State<ChatPage> {
         builder: (context, AsyncSnapshot snapshot) {
           return snapshot.hasData
               ? ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.only(bottom: 85),
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
                     return MessageTile(
@@ -164,10 +167,100 @@ class _ChatPageState extends State<ChatPage> {
       setState(() {
         messageController.clear();
       });
+      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
     }
   }
 
-  sendMedia() {
+  sendMedia(BuildContext context) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Додайте медіа',
+              textAlign: TextAlign.center,
+            ),
+            actionsAlignment: MainAxisAlignment.center,
+            actions: [
+              IconButton(
+                onPressed: () async {
+                  try {
+                    var val = await DataBaseService().getImageFromGallery();
+                    var v = await DataBaseService().uploadFileInStorage(val);
+                    setState(() {
+                      media = v;
+                      print('MEDIA : $media');
+                    });
+                    if (media.isNotEmpty) {
+                      Map<String, dynamic> chatMessageMap = {
+                        'message': media,
+                        'sender': widget.userName,
+                        'time': Timestamp.now(),
+                      };
+                      await DataBaseService()
+                          .sendMessages(widget.groupId, chatMessageMap);
+                      setState(() {
+                        media = '';
+                      });
+                    }
+                    Navigator.of(context).pop();
 
+                    _scrollController.animateTo(
+                        _scrollController.position.maxScrollExtent,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut);
+                  } catch (e) {
+                    print('ERRORO : $e');
+                  }
+                },
+                icon: const Icon(Icons.image, color: Colors.white),
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all(Theme.of(context).primaryColor),
+                ),
+              ),
+              const SizedBox(width: 15),
+              IconButton(
+                onPressed: () async {
+                  try {
+                    var val = await DataBaseService().getImageFromCamera();
+                    var v = await DataBaseService().uploadFileInStorage(val);
+                    setState(() {
+                      media = v;
+                      print('MEDIA : $media');
+                    });
+                    if (media.isNotEmpty) {
+                      Map<String, dynamic> chatMessageMap = {
+                        'message': media,
+                        'sender': widget.userName,
+                        'time': Timestamp.now(),
+                      };
+                      await DataBaseService()
+                          .sendMessages(widget.groupId, chatMessageMap);
+                      setState(() {
+                        media = '';
+                      });
+                    }
+                    Navigator.of(context).pop();
+
+                    _scrollController.animateTo(
+                        _scrollController.position.maxScrollExtent,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut);
+                  } catch (e) {
+                    print('ERRORO : $e');
+                  }
+                },
+                icon: const Icon(Icons.camera, color: Colors.white),
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all(Theme.of(context).primaryColor),
+                ),
+              ),
+            ],
+          );
+        });
   }
 }

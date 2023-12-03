@@ -1,4 +1,6 @@
+import 'package:chat_super_app/screens/user_data.dart';
 import 'package:chat_super_app/services/database_servise.dart';
+import 'package:chat_super_app/services/often_abused_function.dart';
 import 'package:chat_super_app/services/style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +61,7 @@ class _GroupInfoState extends State<GroupInfo> {
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColor,
         title: const Text(
-          'Інформація про групу',
+          'Список учасників',
           style: appBarTitle,
         ),
         actions: [
@@ -126,33 +128,38 @@ class _GroupInfoState extends State<GroupInfo> {
                   itemCount: snapshot.data['members'].length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    return Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Theme.of(context).primaryColor,
-                          child: avatarPath == null ?
-                          Text(
-                            getName(snapshot.data['members'][index])
-                                .substring(0, 1)
-                                .toUpperCase(),
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold),
-                          )
-                              : CircleAvatar(
-                            radius: 28,
-                          backgroundImage: NetworkImage(
-                            avatarPath!,
-                            //'${DataBaseService(uid: await getId(snapshot.data['members'][index])).getUserImageFromDb()}'
-                              ),
+                    return GestureDetector(
+                      onTap: () {
+                        nextScreen(context, const UserData(userName: '', userEmail: 'userEmail', userImage: ''));
+                      },
+                      child: Container(
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Theme.of(context).primaryColor,
+                            child: avatarPath == null ?
+                            Text(
+                              getName(snapshot.data['members'][index])
+                                  .substring(0, 1)
+                                  .toUpperCase(),
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold),
+                            )
+                                : CircleAvatar(
+                              radius: 28,
+                            backgroundImage: NetworkImage(
+                              avatarPath!,
+                              //'${DataBaseService(uid: await getId(snapshot.data['members'][index])).getUserImageFromDb()}'
+                                ),
+                          ),
+                          ),
+                          title: Text(getName(snapshot.data['members'][index])),
+                          subtitle: Text(getId(snapshot.data['members'][index])),
                         ),
-                        ),
-                        title: Text(getName(snapshot.data['members'][index])),
-                        subtitle: Text(getId(snapshot.data['members'][index])),
                       ),
                     );
                   },

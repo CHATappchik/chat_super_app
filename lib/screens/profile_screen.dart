@@ -79,7 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   });
                                   if (_imageFile != null) {
                                     DataBaseService()
-                                        .uploadFileInStoradge(_imageFile)
+                                        .uploadFileInStorage(_imageFile)
                                         .then((value) {
                                       setState(() {
                                         widget.pick = value;
@@ -109,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 getImageFromGallery().whenComplete(() {
                                   if (_imageFile != null) {
                                     DataBaseService()
-                                        .uploadFileInStoradge(_imageFile)
+                                        .uploadFileInStorage(_imageFile)
                                         .then((value) {
                                       setState(() {
                                         widget.pick = value;
@@ -162,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   });
                                   if (_imageFile != null) {
                                     DataBaseService()
-                                        .uploadFileInStoradge(_imageFile)
+                                        .uploadFileInStorage(_imageFile)
                                         .then((value) {
                                       setState(() {
                                         widget.pick = value;
@@ -174,7 +174,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             widget.pick);
                                         nextScreenReplace(
                                             context, const ChatsListScreen());
-                                        //ProfileScreen(userName: widget.userName, email: widget.email, pick: widget.pick,));
                                       });
                                     });
                                   } else {
@@ -193,7 +192,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 getImageFromGallery().whenComplete(() {
                                   if (_imageFile != null) {
                                     DataBaseService()
-                                        .uploadFileInStoradge(_imageFile)
+                                        .uploadFileInStorage(_imageFile)
                                         .then((value) {
                                       setState(() {
                                         widget.pick = value;
