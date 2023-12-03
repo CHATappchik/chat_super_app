@@ -1,3 +1,4 @@
+import 'package:chat_super_app/screens/chats_list_screen.dart';
 import 'package:chat_super_app/screens/user_data.dart';
 import 'package:chat_super_app/services/database_servise.dart';
 import 'package:chat_super_app/services/often_abused_function.dart';
@@ -66,7 +67,47 @@ class _GroupInfoState extends State<GroupInfo> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Вихід"),
+                      content:
+                      const Text("Ви хочете покинути чат? "),
+                      actions: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(
+                            Icons.cancel,
+                            color: Colors.red,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () async {
+                            DataBaseService(
+                                uid: FirebaseAuth
+                                    .instance.currentUser!.uid)
+                                .toggleGroupJoin(
+                                widget.groupId,
+                                getName(widget.adminName),
+                                widget.groupName)
+                                .whenComplete(() {
+                              nextScreenReplace(context, const ChatsListScreen());
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.done,
+                            color: Colors.green,
+                          ),
+                        ),
+                      ],
+                    );
+                  });
+            },
             icon: const Icon(Icons.exit_to_app),
           )
         ],
@@ -124,45 +165,48 @@ class _GroupInfoState extends State<GroupInfo> {
           if (snapshot.hasData) {
             if (snapshot.data['members'] != 0) {
               if (snapshot.data['members'].length != 0) {
-                return ListView.builder(
-                  itemCount: snapshot.data['members'].length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        nextScreen(context, const UserData(userName: '', userEmail: 'userEmail', userImage: ''));
-                      },
-                      child: Container(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 30,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            child: avatarPath == null ?
-                            Text(
-                              getName(snapshot.data['members'][index])
-                                  .substring(0, 1)
-                                  .toUpperCase(),
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            )
-                                : CircleAvatar(
-                              radius: 28,
-                            backgroundImage: NetworkImage(
-                              avatarPath!,
-                              //'${DataBaseService(uid: await getId(snapshot.data['members'][index])).getUserImageFromDb()}'
-                                ),
+                return Expanded(
+                  child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: snapshot.data['members'].length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          nextScreen(context, const UserData(userName: '', userEmail: 'userEmail', userImage: ''));
+                        },
+                        child: Container(
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Theme.of(context).primaryColor,
+                              child: avatarPath == null ?
+                              Text(
+                                getName(snapshot.data['members'][index])
+                                    .substring(0, 1)
+                                    .toUpperCase(),
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold),
+                              )
+                                  : CircleAvatar(
+                                radius: 28,
+                              backgroundImage: NetworkImage(
+                                avatarPath!,
+                                //'${DataBaseService(uid: await getId(snapshot.data['members'][index])).getUserImageFromDb()}'
+                                  ),
+                            ),
+                            ),
+                            title: Text(getName(snapshot.data['members'][index])),
+                            subtitle: Text(getId(snapshot.data['members'][index])),
                           ),
-                          ),
-                          title: Text(getName(snapshot.data['members'][index])),
-                          subtitle: Text(getId(snapshot.data['members'][index])),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 );
               } else {
                 return const Center(
