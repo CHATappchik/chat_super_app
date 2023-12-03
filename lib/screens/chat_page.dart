@@ -28,11 +28,27 @@ class _ChatPageState extends State<ChatPage> {
   String admin = '';
   String media = '';
   ScrollController _scrollController = ScrollController();
+  bool showButton = false;
 
   @override
   void initState() {
     getChatAndAdmin();
+    scrollListener();
     super.initState();
+  }
+
+  scrollListener() {
+    _scrollController.addListener(() {
+      if(_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        setState(() {
+          showButton = false;
+        });
+      }else{
+        setState(() {
+          showButton = true;
+        });
+      }
+    });
   }
 
   getChatAndAdmin() {
@@ -128,7 +144,30 @@ class _ChatPageState extends State<ChatPage> {
                 ],
               ),
             ),
-          )
+          ),
+          Positioned(
+            bottom: 100,
+            right: 0,
+            child: Visibility(
+              visible: showButton,
+              child: SizedBox(
+                width: 38,
+                child: IconButton(
+                  onPressed: () {
+                    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+                        duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                  },
+                    icon: Icon(
+                        Icons.keyboard_arrow_down_outlined,
+                        color: Theme.of(context).primaryColor
+                    ),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.grey[200])
+                  ),
+                  ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -191,7 +230,6 @@ class _ChatPageState extends State<ChatPage> {
                     var v = await DataBaseService().uploadFileInStorage(val);
                     setState(() {
                       media = v;
-                      print('MEDIA : $media');
                     });
                     if (media.isNotEmpty) {
                       Map<String, dynamic> chatMessageMap = {
