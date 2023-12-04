@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 
 class UserData extends StatelessWidget {
   final String userName;
-  final String userEmail;
   final String userImage;
 
   const UserData({
     super.key,
     required this.userName,
-    required this.userEmail,
     required this.userImage
   });
 
@@ -49,13 +47,6 @@ class UserData extends StatelessWidget {
               ],
             ),
             const Divider(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("Email", style: TextStyle(fontSize: 17)),
-                Text(userEmail, style: const TextStyle(fontSize: 17)),
-              ],
-            ),
           ],
         ),
       ),

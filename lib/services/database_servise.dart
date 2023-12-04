@@ -93,7 +93,7 @@ class DataBaseService {
 
   //get image from db
 
-  Future getUserImageFromDb() async{
+  Future <String> getUserImageFromDb() async{
     DocumentReference userDocumentReference = userCollection.doc(uid);
     DocumentSnapshot documentSnapshot = await userDocumentReference.get();
     return documentSnapshot['profilePic'];

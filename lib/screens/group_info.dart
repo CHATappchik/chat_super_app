@@ -25,6 +25,7 @@ class GroupInfo extends StatefulWidget {
 class _GroupInfoState extends State<GroupInfo> {
   Stream? members;
   String? avatarPath;
+  String? userEmail;
 
   @override
   void initState() {
@@ -45,13 +46,15 @@ class _GroupInfoState extends State<GroupInfo> {
   String getName(String r) {
     return r.substring(r.indexOf('_') + 1);
   }
+
   String getId(String res) {
-    return res.substring(0,res.indexOf('_'));
+    return res.substring(0, res.indexOf('_'));
   }
-  Future getAvatarPath(uid) async {
-    final avatarPath = await DataBaseService(uid: uid).getUserImageFromDb();
-    print('AVATAR PATH : $avatarPath');
-    return avatarPath;
+
+  Future<String> getAvatarPath(String res) async {
+    final uid = getId(res);
+    final path = await DataBaseService(uid: uid).getUserImageFromDb();
+    return path;
   }
 
   @override
@@ -74,8 +77,7 @@ class _GroupInfoState extends State<GroupInfo> {
                   builder: (context) {
                     return AlertDialog(
                       title: const Text("Вихід"),
-                      content:
-                      const Text("Ви хочете покинути чат? "),
+                      content: const Text("Ви хочете покинути чат? "),
                       actions: [
                         IconButton(
                           onPressed: () {
@@ -89,14 +91,12 @@ class _GroupInfoState extends State<GroupInfo> {
                         IconButton(
                           onPressed: () async {
                             DataBaseService(
-                                uid: FirebaseAuth
-                                    .instance.currentUser!.uid)
-                                .toggleGroupJoin(
-                                widget.groupId,
-                                getName(widget.adminName),
-                                widget.groupName)
+                                    uid: FirebaseAuth.instance.currentUser!.uid)
+                                .toggleGroupJoin(widget.groupId,
+                                    getName(widget.adminName), widget.groupName)
                                 .whenComplete(() {
-                              nextScreenReplace(context, const ChatsListScreen());
+                              nextScreenReplace(
+                                  context, const ChatsListScreen());
                             });
                           },
                           icon: const Icon(
@@ -172,36 +172,62 @@ class _GroupInfoState extends State<GroupInfo> {
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return GestureDetector(
-                        onTap: () {
-                          nextScreen(context, const UserData(userName: '', userEmail: 'userEmail', userImage: ''));
+                        onTap: () async {
+                          nextScreen(
+                              context,
+                              UserData(
+                                userName:
+                                    getName(snapshot.data['members'][index]),
+                                userImage: await getAvatarPath(
+                                    snapshot.data['members'][index]),
+                              ));
                         },
                         child: Container(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 10),
                           child: ListTile(
                             leading: CircleAvatar(
-                              radius: 30,
-                              backgroundColor: Theme.of(context).primaryColor,
-                              child: avatarPath == null ?
-                              Text(
-                                getName(snapshot.data['members'][index])
-                                    .substring(0, 1)
-                                    .toUpperCase(),
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold),
-                              )
-                                  : CircleAvatar(
-                                radius: 28,
-                              backgroundImage: NetworkImage(
-                                avatarPath!,
-                                //'${DataBaseService(uid: await getId(snapshot.data['members'][index])).getUserImageFromDb()}'
-                                  ),
-                            ),
-                            ),
-                            title: Text(getName(snapshot.data['members'][index])),
-                            subtitle: Text(getId(snapshot.data['members'][index])),
+                                radius: 30,
+                                backgroundColor: Theme.of(context).primaryColor,
+                                child: FutureBuilder<String?>(
+                                  future: getAvatarPath(
+                                      snapshot.data['members'][index]),
+                                  // Call the function to get the avatarPath
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      // If the Future is complete, use the avatarPath
+                                      return snapshot.data!.isNotEmpty
+                                          ? CircleAvatar(
+                                              radius: 28,
+                                              backgroundImage:
+                                                  NetworkImage(snapshot.data!),
+                                            )
+                                          : CircleAvatar(
+                                              radius: 28,
+                                              child: Icon(
+                                                Icons.account_circle,
+                                                size: 55,
+                                                color: Colors.grey[700],
+                                              ),
+                                            );
+                                      //     : Text('I',
+                                      //   // getName(snapshot.data['members'][index])
+                                      //   //     .substring(0, 1)
+                                      //   //     .toUpperCase(),
+                                      //   style: const TextStyle(
+                                      //       color: Colors.white,
+                                      //       fontSize: 15,
+                                      //       fontWeight: FontWeight.bold),
+                                      // );
+                                    } else {
+                                      return CircularProgressIndicator();
+                                    }
+                                  },
+                                )),
+                            title:
+                                Text(getName(snapshot.data['members'][index])),
+                            //subtitle:Text(getId(snapshot.data['members'][index])),
                           ),
                         ),
                       );
