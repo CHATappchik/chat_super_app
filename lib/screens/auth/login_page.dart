@@ -170,28 +170,14 @@ class _LoginPageState extends State<LoginPage> {
                                             .get();
 
                                     if (querySnapshot.docs.isNotEmpty) {
-                                      showDialog(context: context,
-                                          builder: (context) =>
-                                              AlertDialog(
-                                                  title: const Text("OK!"),
-                                                  content: const Text("Ви авторизовані",
-                                                      style: TextStyle(fontSize: 16)),
-                                                  actions: [
-                                                  IconButton(
-                                                  onPressed: () {
-                                        nextScreen(
-                                        context, const ChatsListScreen());
-                                        },
-                                        icon: const Icon(
-                                          Icons.done_outline_sharp,
-                                          color: Colors.green,
-                                          size: 30,
-                                        ),
-                                                  ),
-                                                  ],
-                                              ),
-                                      );
+                                      await HelperFunction.saveUserLoggedInStatus(true);
+                                      await HelperFunction.saveUserEmailSF(user.email!);
+                                      await HelperFunction.saveUserNameSF(user.displayName!);
+                                      await HelperFunction.saveUserPickSF(user.photoURL!);
+                                      showSnackBar(context, Colors.green, 'Ви успішно авторизовані');
                                       // Якщо користувач з таким емейлом існує, переходьте на наступний екран
+                                      nextScreen(
+                                          context, const ChatsListScreen());
                                     } else {
                                       // Якщо користувача з таким емейлом немає, то додайте його до Firestore
                                       await DataBaseService()
@@ -249,6 +235,7 @@ class _LoginPageState extends State<LoginPage> {
           await HelperFunction.saveUserLoggedInStatus(true);
           await HelperFunction.saveUserEmailSF(email);
           await HelperFunction.saveUserNameSF(snapshot.docs[0]['fullName']);
+          await HelperFunction.saveUserPickSF(snapshot.docs[0]['profilePic']);
           nextScreenReplace(context, ChatsListScreen());
         } else {
           showSnackBar(context, Colors.red, value);
