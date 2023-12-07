@@ -48,7 +48,12 @@
           serviceWorkerVersion: serviceWorkerVersion,
         },
         onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
+          engineInitializer.initializeEngine(
+          {
+            hostElement: document.querySelector("#flutter_app"),
+            renderer: "html"
+          }
+          ).then(function(appRunner) {
             appRunner.runApp();
           });
         }

@@ -1,6 +1,7 @@
 import 'package:chat_super_app/repository/theme_repository.dart';
 import 'package:chat_super_app/screens/start_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/theme_cubit.dart';
@@ -8,8 +9,20 @@ import 'bloc/theme_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(const MyApp());
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: const FirebaseOptions(
+            apiKey: 'AIzaSyCSSn6giSgt8O7QULlUOT_ICB6QiwA1y6U',
+            appId: '1:338724453403:web:b62c080526eaf0432b8cbe',
+            messagingSenderId: '338724453403',
+            projectId: 'chatsuperapp',
+          storageBucket: 'chatsuperapp.appspot.com',
+        ));
+    runApp(const MyApp());
+  } else {
+    await Firebase.initializeApp();
+    runApp(const MyApp());
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -43,4 +56,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
